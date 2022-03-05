@@ -26,6 +26,8 @@ jobs:
             export PATH=$PATH:/usr/local/go/bin && \
             go version && \
             echo " LINT " && \
+            go get -u && \
+            export GO111MODULE=on && \
             make dependabot-check license-check lint vanity-import-check && \
             make build && \
             make check-clean-work-tree'
@@ -44,8 +46,8 @@ jobs:
             arm64v8/ubuntu \
             bash -exc 'apt-get update && \
             apt install -y wget tar git make gcc g++ && \
-            wget https://go.dev/dl/go1.16.15.linux-arm64.tar.gz && \
-            tar -C /usr/local -xzf go1.16.15.linux-arm64.tar.gz && \
+            wget https://go.dev/dl/go1.16.14.linux-arm64.tar.gz && \
+            tar -C /usr/local -xzf go1.16.14.linux-arm64.tar.gz && \
             export PATH=$PATH:/usr/local/go/bin && \
             go version && \
             echo " test-race " && \
