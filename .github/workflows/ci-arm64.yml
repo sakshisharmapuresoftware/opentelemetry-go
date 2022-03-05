@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build-arm64:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
@@ -28,13 +28,50 @@ jobs:
             echo " LINT " && \
             make dependabot-check license-check lint vanity-import-check && \
             make build && \
-            make check-clean-work-tree && \
-            echo " test-race " && \
-            make test-race && \
-            echo " test-coverage " && \
-            make test-coverage && \
-            deactivate'
+            make check-clean-work-tree'
             
+  test-race:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v1
+    - name: Test
+      run: |
+            docker run --rm -v ${{ github.workspace }}:/io:rw --workdir=/io \
+            arm64v8/ubuntu \
+            bash -exc 'apt-get update && \
+            apt install -y wget tar git make gcc g++ && \
+            wget https://go.dev/dl/go1.16.15.linux-arm64.tar.gz && \
+            tar -C /usr/local -xzf go1.16.15.linux-arm64.tar.gz && \
+            export PATH=$PATH:/usr/local/go/bin && \
+            go version && \
+            echo " test-race " && \
+            make test-race'  
+            
+  test-coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v1
+    - name: Test
+      run: |
+            docker run --rm -v ${{ github.workspace }}:/io:rw --workdir=/io \
+            arm64v8/ubuntu \
+            bash -exc 'apt-get update && \
+            apt install -y wget tar git make gcc g++ && \
+            wget https://go.dev/dl/go1.16.15.linux-arm64.tar.gz && \
+            tar -C /usr/local -xzf go1.16.15.linux-arm64.tar.gz && \
+            export PATH=$PATH:/usr/local/go/bin && \
+            go version && \
+            echo " test-coverage " && \
+            make test-coverage'         
+         
   compatibility-test-16:
     runs-on: ubuntu-latest
     steps:
@@ -53,8 +90,7 @@ jobs:
             tar -C /usr/local -xzf go1.16.15.linux-arm64.tar.gz && \
             export PATH=$PATH:/usr/local/go/bin && \
             go version && \
-            make test-short && \
-            deactivate'
+            make test-short'
         
   compatibility-test-17:
     runs-on: ubuntu-latest
@@ -74,5 +110,4 @@ jobs:
             tar -C /usr/local -xzf go1.17.8.linux-arm64.tar.gz && \
             export PATH=$PATH:/usr/local/go/bin && \
             go version && \
-            make test-short && \
-            deactivate'      
+            make test-short'      
