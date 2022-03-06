@@ -9,7 +9,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -27,7 +27,7 @@ jobs:
             export PATH=$PATH:/usr/local/go/bin && \
             go version && \
             echo " LINT " && \
-            make dependabot-check license-check lint vanity-import-check && \
+            make dependabot-check license-check lint vanity-import-check --timeout=35s && \
             make build && \
             make check-clean-work-tree'
             
@@ -45,8 +45,8 @@ jobs:
             arm64v8/ubuntu \
             bash -exc 'apt-get update && \
             apt install -y wget tar git make gcc g++ && \
-            wget https://go.dev/dl/go1.17.8.linux-arm64.tar.gz && \
-            tar -C /usr/local -xzf go1.17.8.linux-arm64.tar.gz && \
+            wget https://go.dev/dl/go1.16.15.linux-arm64.tar.gz && \
+            tar -C /usr/local -xzf go1.16.15.linux-arm64.tar.gz && \
             export PATH=$PATH:/usr/local/go/bin && \
             go version && \
             echo " test-race " && \
